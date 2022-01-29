@@ -47,12 +47,21 @@ for seller_id in keys:
             soup_page=bs(res.text,"html.parser")
             product_list=soup_page.find("ul",class_="product-list")
             for book in product_list:
-                my_dict[book.span.text]=book.find("div",class_="product-list-price").text
+                price="".join(book.find("div",class_="product-list-price").text.replace(" TL",""))
+                price=float(price.replace(",","."))
+                if book.span.text not in my_dict.keys():
+                    my_dict[book.span.text]=[price]
+                else:
+                    my_dict[book.span.text].append(price)
     else:
         res = requests.get(f"{url}", headers=headers)
         soup_page=bs(res.text,"html.parser")
         product_list=soup_page.find("ul",class_="product-list")
-        my_dict[book.span.text]=book.find("div",class_="product-list-price").text
+        for book in product_list:
+            if book.span.text not in my_dict.keys():
+                my_dict[book.span.text]=[book.find("div",class_="product-list-price").text]
+            else:
+                my_dict[book.span.text].append(book.find("div",class_="product-list-price").text)
 
     books_dict[seller_name]=my_dict
 
