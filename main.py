@@ -30,9 +30,11 @@ for seller_id in keys:
     result = requests.get(url, headers=headers)
 
     soup=bs(result.text,"html.parser")
-    pages=soup.find("div",class_="pagination-product-bottom")
+    #pages=soup.find("div",class_="pagination-product-bottom")
+    pages=soup.find("input",attrs={"type":"text","name":"page"})
     if pages !=None:
-        page_count=int(pages.strong.text.split("/")[1])
+        #page_count=int(pages.strong.text.split("/")[1])
+        page_count=int(pages["value"])
         for i in range(1,page_count+1):
             res = requests.get(f"{url}+&page={i}", headers=headers)
             soup_page=bs(res.text,"html.parser")
