@@ -22,6 +22,7 @@ print("""
 """)
 tip=input(">: ")
 book_name=input("name: ")
+
 for seller_id in keys:
     seller_name=data[seller_id]
     print(f"serching thru {seller_name}")
@@ -30,26 +31,29 @@ for seller_id in keys:
     result = requests.get(url, headers=headers)
 
     soup=bs(result.text,"html.parser")
-    #pages=soup.find("div",class_="pagination-product-bottom")
-    pages=soup.find("input",attrs={"type":"text","name":"page"})
+    pages=soup.find("div",class_="pagination-product-bottom")
+   
     if pages !=None:
-        #page_count=int(pages.strong.text.split("/")[1])
-        page_count=int(pages["value"])
+        try:    
+            page_count=int(pages.strong.text.split("/")[1])
+        except AttributeError:
+            pages=soup.find("input",attrs={"type":"text","name":"page"})
+            page_count=int(pages["value"])
+
         for i in range(1,page_count+1):
-            res = requests.get(f"{url}+&page={i}", headers=headers)
+            request_url=f"{url}&page={i}"
+            print(request_url)
+            res = requests.get(request_url, headers=headers)
             soup_page=bs(res.text,"html.parser")
-            product_list=soup.find("ul",class_="product-list")
-            for i in product_list:
-                my_dict[i.span.text]=i.find("div",class_="product-list-price").text
+            product_list=soup_page.find("ul",class_="product-list")
+            for book in product_list:
+                my_dict[book.span.text]=book.find("div",class_="product-list-price").text
     else:
         res = requests.get(f"{url}", headers=headers)
         soup_page=bs(res.text,"html.parser")
-        product_list=soup.find("ul",class_="product-list")
-        try:
-            for i in product_list:
-                my_dict[i.span.text]=i.find("div",class_="product-list-price").text
-        except TypeError:
-            continue
+        product_list=soup_page.find("ul",class_="product-list")
+        my_dict[book.span.text]=book.find("div",class_="product-list-price").text
+
     books_dict[seller_name]=my_dict
 
 
@@ -61,7 +65,7 @@ with open("result.json",encoding='utf8') as fp:
     data=json.load(fp)
 
 app = Flask(__name__)
-
+app.config['JSON_SORT_KEYS'] = False
 
 @app.route('/')
 def hello_world():

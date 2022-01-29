@@ -2,7 +2,7 @@ import re
 import json
 
 
-with open("sellers_list.txt",mode="r+") as k_list:
+with open("sellers-links.txt",mode="r+") as k_list:
     data=k_list.readlines()
 
 
@@ -16,5 +16,5 @@ for i in data:
     sahaf_dict[s_id]=name[0]
 
 
-with open('data.json', 'w') as fp:
+with open('sellers.json', 'w') as fp:
     json.dump(sahaf_dict, fp)
