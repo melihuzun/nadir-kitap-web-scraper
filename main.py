@@ -1,11 +1,9 @@
 import requests
 from bs4 import BeautifulSoup as bs
 import json
-
 from urllib.parse import quote
-import urllib.request
 
-import urllib3
+
 with open("data.json","r") as fp:
     data=json.load(fp)
 
@@ -18,19 +16,17 @@ print("""
 2.kitap_adi
 """)
 tip=input(">: ")
-tip=quote("yayinevi")
-
 book_name=input("name: ")
-book_name=quote("tübitak")
-
 seller=keys[0]
 
 
+books_dict={}
 
 url=f"https://nadirkitap.com/kitapara.php?satici={seller}&ara=aramayap&tip={tip}&kitap_Adi={book_name}"#&page={page}
 headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
 
 result = requests.get(url, headers=headers)
+print(result.status_code)
 soup=bs(result.text,"html.parser")
 
 pages=soup.find("div",class_="pagination-product-bottom")
@@ -43,5 +39,7 @@ for i in range(1,page_count+1):
     soup_page=bs(res.text,"html.parser")
     product_list=soup.find("ul",class_="product-list")
     for i in product_list:
-        print(i.span.text,end=": ")
-        print(i.find("div",class_="product-list-price").text)
+        books_dict[i.span.text]=i.find("div",class_="product-list-price").text
+
+sort_books = sorted(books_dict.items(), key=lambda x: x[1])
+print(sort_books)
