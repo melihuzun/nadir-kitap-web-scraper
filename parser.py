@@ -2,7 +2,7 @@ import re
 import json
 
 
-with open("kitap.txt",mode="r+") as k_list:
+with open("sellers_list.txt",mode="r+") as k_list:
     data=k_list.readlines()
 
 
